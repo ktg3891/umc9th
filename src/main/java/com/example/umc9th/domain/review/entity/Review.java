@@ -26,7 +26,7 @@ public class Review {
     private LocalDateTime createdAt;
 
     @Column(name = "star", nullable = false)
-    private Float rate;
+    private Float star;
 
     @Lob
     @Column(name = "content", nullable = false)
@@ -47,4 +47,6 @@ public class Review {
     @OneToMany(mappedBy = "review", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Reply> replies = new ArrayList<>();
+
+
 }
