@@ -1,5 +1,10 @@
 package com.example.umc9th.global.apiPayload.handler;
 
+import com.example.umc9th.domain.mission.exception.MissionException;
+import com.example.umc9th.domain.review.exception.ReviewException;
+import com.example.umc9th.domain.review.exception.code.ReviewErrorCode;
+import com.example.umc9th.domain.store.exception.StoreException;
+import com.example.umc9th.domain.store.exception.code.StoreErrorCode;
 import com.example.umc9th.global.apiPayload.ApiResponse;
 import com.example.umc9th.global.apiPayload.code.BaseErrorCode;
 import com.example.umc9th.global.apiPayload.code.GeneralErrorCode;
@@ -34,4 +39,41 @@ public class GeneralExceptionAdvice {
                         )
                 );
     }
+
+    @ExceptionHandler(ReviewException.class)
+    public ResponseEntity<ApiResponse<Void>> handleReviewException(ReviewException ex) {
+
+        ReviewErrorCode errorCode = ex.getCode();
+
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(ApiResponse.onFailure(
+                        errorCode,
+                        null
+                ));
+    }
+
+    @ExceptionHandler(StoreException.class)
+    public ResponseEntity<ApiResponse<Void>> handleStoreException(StoreException ex) {
+
+        StoreErrorCode errorCode = ex.getErrorCode();
+
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(ApiResponse.onFailure(
+                        errorCode,
+                        null
+                ));
+    }
+
+    @ExceptionHandler(MissionException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissionException(MissionException ex) {
+
+        BaseErrorCode code = ex.getCode();
+
+        return ResponseEntity.status(code.getHttpStatus())
+                .body(ApiResponse.onFailure(
+                        code,
+                        null
+                ));
+    }
+
 }
