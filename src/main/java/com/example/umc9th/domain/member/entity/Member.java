@@ -8,6 +8,7 @@ import com.example.umc9th.domain.member.enums.Address;
 import com.example.umc9th.domain.member.enums.Gender;
 import com.example.umc9th.domain.member.enums.SocialType;
 import com.example.umc9th.domain.review.entity.Review;
+import com.example.umc9th.global.auth.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,12 +22,13 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@Setter
 @Table(name = "member")
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "name", nullable = false, length = 3)
     private String name;
@@ -49,9 +51,6 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    @Column(name = "social_id", nullable = false, unique = true, length = 100)
-    private String socialId;
-
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
@@ -66,6 +65,12 @@ public class Member {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)

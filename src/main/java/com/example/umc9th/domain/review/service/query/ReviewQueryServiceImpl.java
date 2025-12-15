@@ -11,7 +11,10 @@ import com.example.umc9th.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,24 +23,39 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     private final StoreRepository storeRepository;
     private final ReviewRepository reviewRepository;
 
-
+    /**
+     * 리뷰 검색 (현재 ReviewRepository가 페이징 store조회만 있으므로,
+     * - type=STORE 일 때: storeName=filter 로 보고 첫 페이지 20개 반환
+     * - 그 외: 전체 리뷰 반환 (JpaRepository 기본 메서드 findAll 사용)
+     */
     @Override
-    public ReviewResDTO.ReviewPreViewListDTO findReview(
-            String storeName,
-            Integer page
-    ){
-        // - 가게를 가져온다 (가게 존재 여부 검증)
+    public List<Review> searchReview(String filter, String type) {
+
+        if ("STORE".equalsIgnoreCase(type)) {
+            Store store = storeRepository.findByName(filter)
+                    .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
+
+            Pageable pageable = PageRequest.of(0, 20);
+            Page<Review> pageResult = reviewRepository.findAllByStore(store, pageable);
+            return pageResult.getContent();
+        }
+
+        // fallback: 전체 리뷰
+        return reviewRepository.findAll();
+    }
+
+    /**
+     * 가게별 리뷰 조회 (페이징) -> DTO 변환
+     */
+    @Override
+    public ReviewResDTO.ReviewPreViewListDTO findReview(String storeName, Integer page) {
+
         Store store = storeRepository.findByName(storeName)
-                //    - 없으면 예외 터뜨린다
                 .orElseThrow(() -> new StoreException(StoreErrorCode.NOT_FOUND));
 
-        //- 가게에 맞는 리뷰를 가져온다 (Offset 페이징)
         PageRequest pageRequest = PageRequest.of(page, 5);
         Page<Review> result = reviewRepository.findAllByStore(store, pageRequest);
 
-        //- 결과를 응답 DTO로 변환한다 (컨버터 이용)
         return ReviewConverter.toReviewPreviewListDTO(result);
     }
-
-
 }

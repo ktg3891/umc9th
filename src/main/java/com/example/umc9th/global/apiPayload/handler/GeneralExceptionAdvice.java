@@ -43,7 +43,7 @@ public class GeneralExceptionAdvice {
     @ExceptionHandler(ReviewException.class)
     public ResponseEntity<ApiResponse<Void>> handleReviewException(ReviewException ex) {
 
-        ReviewErrorCode errorCode = ex.getCode();
+        BaseErrorCode errorCode = ex.getCode();
 
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(ApiResponse.onFailure(

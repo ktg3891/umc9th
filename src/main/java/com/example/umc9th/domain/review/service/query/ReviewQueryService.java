@@ -7,12 +7,9 @@ import java.util.List;
 
 public interface ReviewQueryService {
 
-    List<Review> searchReview(
-            String filter,
-            String type
-    ) throws Exception;
+    // filter/type 기반 검색 (간단 버전)
+    List<Review> searchReview(String filter, String type);
 
-    ReviewResDTO.ReviewPreViewListDTO findReview(String storeName, Integer page
-
-    );
+    // 가게 이름으로 리뷰 미리보기 리스트 조회(페이징)
+    ReviewResDTO.ReviewPreViewListDTO findReview(String storeName, Integer page);
 }
